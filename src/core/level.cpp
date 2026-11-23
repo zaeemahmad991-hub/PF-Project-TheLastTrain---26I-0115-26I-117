@@ -54,9 +54,9 @@ bool loadBuildingMap(const char* filename,
             if(file.getline(line,MAX_LINE_LEN)){
                 int len=strlen(line);
                 for(int i =0;i<ROOMS_PER_FLOOR;i++){
-                    for(int itemSeacrh = col[i]-1;itemSeacrh<=col[i]+9 && itemSeacrh<len;itemSeacrh++){
-                        if (line[itemSeacrh]!=' ' && entityCounts[f-1][i]<MAX_ENTITIES_PER_ROOM){
-                            roomEntities[f-1][i][entityCounts[f-1][i]]=line[itemSeacrh];
+                    for(int itemSearch = col[i]-1;itemSearch<=col[i]+9 && itemSearch<len;itemSearch++){
+                        if (line[itemSearch]!=' ' && entityCounts[f-1][i]<MAX_ENTITIES_PER_ROOM){
+                            roomEntities[f-1][i][entityCounts[f-1][i]]=line[itemSearch];
                             entityCounts[f-1][i]++;
                         }
                     }

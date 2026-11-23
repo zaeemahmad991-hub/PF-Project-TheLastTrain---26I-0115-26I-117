@@ -18,24 +18,45 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
 }
 
 void applyResourceDelta(int& energy, int& time, int deltaEnergy, int deltaTime) {
-    (void)energy; (void)time; (void)deltaEnergy; (void)deltaTime; // TODO
+    energy += deltaEnergy;
+    time += deltaTime;
+    energy = clampInt(energy, 0, MAX_ENERGY);
+    time = clampInt(time, 0, MAX_TIME);
 }
 
 void applyScoreDelta(int& score, int deltaScore) {
-    (void)score; (void)deltaScore; // TODO
+    score += deltaScore;
 }
 
 bool hasItem(const char inventory[MAX_INVENTORY_CAPACITY], int inventoryCount, char itemSymbol) {
-    (void)inventory; (void)inventoryCount; (void)itemSymbol; // TODO
+    for (int i = 0; i < inventoryCount; i++) {
+        if (inventory[i] == itemSymbol) {
+            return true;
+        }
+    }
     return false;
 }
 
 bool addItem(char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount, char itemSymbol) {
-    (void)inventory; (void)inventoryCount; (void)itemSymbol; // TODO
-    return false;
+    if (inventoryCount >= MAX_INVENTORY_CAPACITY) {
+        return false;
+    } else {
+        inventory[inventoryCount] = itemSymbol;
+        inventoryCount++;
+        return true;
+    }
 }
 
 bool removeItem(char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount, char itemSymbol) {
-    (void)inventory; (void)inventoryCount; (void)itemSymbol; // TODO
+    for(int i=0; i<inventoryCount;i++){
+        if(inventory[i]==itemSymbol){
+            for(int j=i;j<inventoryCount;j++){
+                inventory[j]=inventory[j+1];
+            }
+            inventory[i]=ENT_NONE;
+            inventoryCount--;
+            return true;
+        }
+    }
     return false;
 }
