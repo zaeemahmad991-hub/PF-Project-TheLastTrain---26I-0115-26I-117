@@ -1,5 +1,6 @@
 #include "physics.h"
 #include "util.h"
+# include "switches.h"
 
 bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
                          const char horizontalConn[NUM_FLOORS][ROOMS_PER_FLOOR - 1],
@@ -54,7 +55,7 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
         return true;
     }
     if (connType == CONN_LOCKED_DOOR) {
-        return hasItem(inventory, inventoryCount, ENT_MASTER_KEY);
+        return unlockFloor3Door(inventory, inventoryCount);
     }
     if (connType == CONN_LIFT2) {
         return (emergencyTripsLeft > 0) || lift2Operational;
