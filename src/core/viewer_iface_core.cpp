@@ -15,7 +15,7 @@ void renderRoomDetails(int floor, int room,
 }
 
 void renderAsciiBuilding(int playerFloor, int playerRoom) {
-    (void)playerFloor; (void)playerRoom; // TODO
+    (void)playerFloor; (void)playerRoom;  // TODO
 }
 
 void renderObjectivesChecklist(const bool objectives[NUM_OBJECTIVES]) {
