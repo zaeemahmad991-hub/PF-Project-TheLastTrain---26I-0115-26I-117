@@ -33,12 +33,11 @@ bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
         outConnType = CONN_STAIRS;
         return true;
     }
-    if (((fromR == 2 || fromR == 3) && (toR == 2 || toR == 3)) && ((fromF == 1 && toF == 2) || (fromF == 2 && toF == 1))) {
+    if (((fromR == 2 || fromR == 3) && (toR == 2 || toR == 3)) && canUseLift1(fromF, toF)) {
         outConnType = CONN_LIFT1;
         return true;
     }
-    if ((fromR == 4 && toR == 4)  && ((fromF == 4 && toF == 5) || (fromF == 5 && toF == 4) || 
-    (fromF == 2 && toF == 4) || (fromF == 4 && toF == 2) || (fromF == 5 && toF == 2) || (fromF == 2 && toF == 5))) {
+    if ((fromR == 4 && toR == 4)  && canUseLift2(fromF, toF, lift2Operational, emergencyTripsLeft)){ {
         outConnType = CONN_LIFT2;
         return true;
     }
