@@ -1,6 +1,8 @@
 #include "physics.h"
 #include "util.h"
 # include "switches.h"
+# include <iostream>
+using namespace std;
 
 bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
                          const char horizontalConn[NUM_FLOORS][ROOMS_PER_FLOOR - 1],
@@ -37,7 +39,7 @@ bool isDirectlyConnected(int fromF, int fromR, int toF, int toR,
         outConnType = CONN_LIFT1;
         return true;
     }
-    if ((fromR == 4 && toR == 4)  && canUseLift2(fromF, toF, lift2Operational, emergencyTripsLeft)){ {
+    if ((fromR == 4 && toR == 4) && canUseLift2(fromF, toF, true, 0)) {
         outConnType = CONN_LIFT2;
         return true;
     }
@@ -54,10 +56,19 @@ bool canTraverse(int targetFloor, int targetRoom, char connType,
         return true;
     }
     if (connType == CONN_LOCKED_DOOR) {
-        return unlockFloor3Door(inventory, inventoryCount);
+        if(!unlockFloor3Door(inventory, inventoryCount)) {
+            cout<< "The door is locked. You need the Master Key to unlock it." << endl;         
+            return false;
+        }
+        return true;
     }
     if (connType == CONN_LIFT2) {
-        return (emergencyTripsLeft > 0) || lift2Operational;
+        if (!(emergencyTripsLeft > 0) && !lift2Operational) {
+            cout << "No Emergency Trips Left. Lift 2 is not operational." << endl;
+            return false;
+        } else {
+            return true;
+        }
     }
     return false;
 }

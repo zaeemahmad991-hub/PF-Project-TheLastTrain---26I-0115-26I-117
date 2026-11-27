@@ -1,6 +1,8 @@
 #include "switches.h"
 #include "util.h"
 # include "physics.h"
+# include <iostream>
+using namespace std;
 
 bool canUseLift1(int fromFloor, int toFloor) {
     if ((fromFloor == 1 && toFloor == 2) || (fromFloor == 2 && toFloor == 1)){
@@ -26,9 +28,11 @@ bool unlockFloor3Door(const char inventory[MAX_INVENTORY_CAPACITY], int inventor
 bool installFuseControlPanel(char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount,
                              bool objectives[NUM_OBJECTIVES], int& score) {
     if (!hasItem(inventory, inventoryCount, ENT_FUSE)){
+        cout << "You don't have the fuse in your inventory." << endl;
         return false;
     }
     if (objectives[OBJ_FUSE_INSTALLED]) {
+        cout << "The fuse is already installed." << endl;
         return false;
     }
     removeItem(inventory, inventoryCount, ENT_FUSE);
@@ -41,11 +45,19 @@ bool installFuseControlPanel(char inventory[MAX_INVENTORY_CAPACITY], int& invent
 }
 
 bool verifyCabinetCode(const char* enteredCode, const bool objectives[NUM_OBJECTIVES]) {
-    if ((objectives[OBJ_CLUE_4] == false) || (objectives[OBJ_CLUE_2] == false) || (objectives[OBJ_CLUE_7] == false)) {
+    if (objectives[OBJ_CLUE_4] == false){
+        cout << "You haven't found clue digit 4 yet." << endl;
+        return false;
+    } else if(objectives[OBJ_CLUE_2] == false) {
+        cout << "You haven't found clue digit 2 yet." << endl;
+        return false;
+    } else if(objectives[OBJ_CLUE_7] == false) {
+        cout << "You haven't found clue digit 7 yet." << endl;
         return false;
     }
     if (stringEquals(enteredCode, "427")) {
         return true;
     }
+    cout << "Incorrect code. The cabinet remains locked." << endl;
     return false;
 }
