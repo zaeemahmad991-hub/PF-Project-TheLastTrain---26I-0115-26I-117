@@ -31,8 +31,10 @@ void runSimulation(int& playerFloor, int& playerRoom,
                    char roomEntities[NUM_FLOORS][ROOMS_PER_FLOOR][MAX_ENTITIES_PER_ROOM],
                    int entityCounts[NUM_FLOORS][ROOMS_PER_FLOOR]) {
     
-    // TODO
-    std::cout << "[stub] runSimulation not implemented yet\n";
+    printHeader("THE LAST TRAIN");
+    cout<< "New Game (N) OR Load Game (L)? ";
+    cin.getline(buf, MAX_LINE_LEN);
+    trimWhitespace(buf);
 }
 
 bool handleMoveCommand(int targetFloor, int targetRoom,
@@ -215,18 +217,70 @@ bool handleUseCommand(char itemSymbol, int currentFloor, int currentRoom,
     bool done = false;
     if (itemSymbol == ENT_FUSE && currentFloor == 3 && currentRoom == 4){
         done = installFuseControlPanel(inventory, inventoryCount, objectives, score);
-
+    } else if (itemSymbol == ENT_MEDICAL_KIT && currentFloor == 4 && currentRoom == 1){
+        if (!objectives[OBJ_PASSENGER_RESCUED]){
+            objectives[OBJ_PASSENGER_RESCUED] = true;
+            removeItem(inventory, inventoryCount, ENT_MEDICAL_KIT);
+            applyScoreDelta(score, SCORE_RESCUE_PASSENGER);
+            cout << "You rescued the passenger!" << endl;
+            done = true;
+        } else {
+            cout << "The passenger is already rescued." << endl;
+        }
+    } else if (itemSymbol == ENT_CAT_CARRIER && currentFloor == 3 && currentRoom == 3){
+        if (!objectives[OBJ_CAT_SECURED]){
+            objectives[OBJ_CAT_SECURED] = true;
+            applyScoreDelta(score, SCORE_SECURE_CAT);
+            cout << "You secured the cat!" << endl;
+            done = true;
+        } else {
+            cout << "The cat is already secured." << endl;
+        }
+    } else if (itemSymbol == ENT_CABINET_TRAIN_KEY && currentFloor == 5 && currentRoom == 2){
+        if (!objectives[OBJ_CAT_SECURED] || !objectives[OBJ_PASSENGER_RESCUED]){
+            cout << "You need to secure the cat and rescue the passenger first." << endl;
+        } else if (!objectives[OBJ_TRAIN_PREPARED]){
+            objectives[OBJ_TRAIN_PREPARED] = true;
+            applyScoreDelta(score, SCORE_PREPARE_TRAIN);
+            objectives[OBJ_MISSION_WON] = true;
+            applyScoreDelta(score, SCORE_MISSION_VICTORY);
+            cout << "You Won!" << endl;
+            done = true;
+        }
+    } else {
+        cout << "You cannot use that item here." << endl;
+    }
+    if (done){
+        applyResourceDelta(energy, time, COST_ITEM_USE_ENERGY, COST_ITEM_USE_TIME);
+        return true;
     }
     return false;
+
 }
 
 bool handleUnlockCabinetCommand(const char* code, int currentFloor, int currentRoom,
                                 bool objectives[NUM_OBJECTIVES], int& score,
                                 char roomEntities[NUM_FLOORS][ROOMS_PER_FLOOR][MAX_ENTITIES_PER_ROOM],
                                 int& entityCount) {
-    (void)code; (void)currentFloor; (void)currentRoom; (void)objectives;
-    (void)score; (void)roomEntities; (void)entityCount; // TODO
-    return false;
+    if (currentFloor != 5 || currentRoom != 1){
+        cout<<"There is no cabinet here."<<endl;
+        return false;
+    } 
+    if (objectives[OBJ_CABINET_UNLOCKED]){
+        cout<<"The cabinet is already unlocked."<<endl;
+        return false;
+    }
+    if (verifyCabinetCode(code, objectives)){
+        objectives[OBJ_CABINET_UNLOCKED] = true;
+        applyScoreDelta(score, SCORE_CABINET_UNLOCK);
+        objectives[OBJ_TRAIN_KEY] = true;
+        applyScoreDelta(score, SCORE_TRAIN_KEY);
+        cout<<"Cabinet unlocked! You found the Train Key!"<<endl;
+        removeFromFloor(roomEntities[4][0], entityCount, ENT_CABINET_TRAIN_KEY);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool checkEndConditions(int energy, int time, const bool objectives[NUM_OBJECTIVES]) {

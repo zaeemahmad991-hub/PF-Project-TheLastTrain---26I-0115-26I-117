@@ -38,9 +38,13 @@ bool installFuseControlPanel(char inventory[MAX_INVENTORY_CAPACITY], int& invent
     removeItem(inventory, inventoryCount, ENT_FUSE);
     objectives[OBJ_FUSE_INSTALLED] = true;
     applyScoreDelta(score, SCORE_INSTALL_FUSE);
+    cout << "Fuse installed successfully." << endl;
     if (objectives[OBJ_LIFT_PASS]) {
         objectives[OBJ_LIFT2_ACTIVE] = true;
     }
+    if (objectives[OBJ_LIFT2_ACTIVE]) {
+        cout << "Lift 2 is now fully operational!" << endl;
+    } 
     return true;
 }
 
