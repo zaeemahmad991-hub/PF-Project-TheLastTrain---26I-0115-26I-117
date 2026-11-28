@@ -23,6 +23,27 @@ void removeFromFloor(char shelf[], int &count, char sym){
     }
 }
 
+bool readLine(char buf[]){
+    if (!cin.getline(buf, MAX_LINE_LEN)){
+        return false;
+    }
+    trimWhitespace(buf);
+    return true;
+}
+
+void printHelp(){
+    cout << "Commands:" << endl;
+    cout << "  move <floor> <room>   e.g. move 4 2" << endl;
+    cout << "  inspect               search the room for clues" << endl;
+    cout << "  collect <symbol>      e.g. collect <" << endl;
+    cout << "  use <symbol>          e.g. use %" << endl;
+    cout << "  unlock <code>         e.g. unlock 427" << endl;
+    cout << "  objectives            show mission checklist" << endl;
+    cout << "  save                  save game to out/savegame.txt" << endl;
+    cout << "  help                  show this list" << endl;
+    cout << "  quit                  end the game" << endl;
+}
+
 void runSimulation(int& playerFloor, int& playerRoom,
                    int& energy, int& time, int& score,
                    char inventory[MAX_INVENTORY_CAPACITY], int& inventoryCount,
@@ -30,11 +51,12 @@ void runSimulation(int& playerFloor, int& playerRoom,
                    char horizontalConn[NUM_FLOORS][ROOMS_PER_FLOOR - 1],
                    char roomEntities[NUM_FLOORS][ROOMS_PER_FLOOR][MAX_ENTITIES_PER_ROOM],
                    int entityCounts[NUM_FLOORS][ROOMS_PER_FLOOR]) {
-    
+    char buf[MAX_LINE_LEN];
     printHeader("THE LAST TRAIN");
     cout<< "New Game (N) OR Load Game (L)? ";
-    cin.getline(buf, MAX_LINE_LEN);
-    trimWhitespace(buf);
+    if(!readLine(buf)){
+        return;
+    }
 }
 
 bool handleMoveCommand(int targetFloor, int targetRoom,
