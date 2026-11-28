@@ -1,6 +1,12 @@
 #include "logger.h"
 #include "util.h"
 #include "state.h"
+#include "physics.h"
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
 
 bool saveGameStateToFile(const char* filename,
                          int playerFloor, int playerRoom,
@@ -35,7 +41,7 @@ bool saveGameStateToFile(const char* filename,
     file << endl;
     for (int f = 0; f < NUM_FLOORS; f++) {
         for (int r = 0; r < ROOMS_PER_FLOOR; r++) {
-            file << endl << "ROOM_" << (f + 1) << "_" << (r + 1) << ": ";
+            file << "ROOM_" << (f + 1) << "_" << (r + 1) << ": ";
             if (entityCounts[f][r] == 0) {
                 file << "NONE";
             } else {
@@ -43,6 +49,7 @@ bool saveGameStateToFile(const char* filename,
                     file << roomEntities[f][r][e];
                 }
             }
+            file << endl;
         }
     }
     file.close();
@@ -85,7 +92,7 @@ bool loadGameStateFromFile(const char* filename,
             trimWhitespace(line);
             trimWhitespace(value);
             if (stringEquals(line,"PLAYER_FLOOR")){
-                int v=(atoi(value));
+                int v=atoi(value);
                 if (v >= 1 && v <= NUM_FLOORS) {
                     playerFloor = v;
                     gotFloor = true;
@@ -94,7 +101,7 @@ bool loadGameStateFromFile(const char* filename,
                     return false;
                 }
             } else if (stringEquals(line,"PLAYER_ROOM")){
-                int v=(atoi(value));
+                int v=atoi(value);
                 if (v >= 1 && v <= ROOMS_PER_FLOOR) {
                     playerRoom = v;
                     gotRoom = true;
@@ -116,7 +123,7 @@ bool loadGameStateFromFile(const char* filename,
             } else if (stringEquals(line,"INVENTORY")){
                 if (!stringEquals(value, "NONE")) {
                     for (char* i = value; *i != '\0'; i++) {
-                        addItem(inventory, inventoryCount, value[i]);
+                        addItem(inventory, inventoryCount, *i);
                     }
                 }
             } else if (stringEquals(line,"OBJECTIVES")){
@@ -134,10 +141,8 @@ bool loadGameStateFromFile(const char* filename,
                 if (f < 1 || f > NUM_FLOORS || r < 1 || r > ROOMS_PER_FLOOR) {
                     continue;
                 }
-                if (stringEquals(value, "NONE")) {
-                    entityCounts[f-1][r-1] = 0;
-                } else {
-                    for (int i = 0; entityCounts[f-1][r-1] < MAX_ENTITIES_PER_ROOM; i++) {
+                if (!stringEquals(value, "NONE")) {
+                    for (int i = 0; value[i] != '\0' && entityCounts[f-1][r-1] < MAX_ENTITIES_PER_ROOM; i++) {
                         roomEntities[f-1][r-1][entityCounts[f-1][r-1]] = value[i];
                         entityCounts[f-1][r-1]++;
                     }
@@ -160,7 +165,7 @@ void writeGameSummaryReport(const char* filename,
         cout << "Could not write summary to " << filename << endl;
         return;
     }
-    const char* labels[14] = {
+    const char* labels[OBJ_MISSION_WON] = {
         "Master Key collected",
         "Clue digit 4 found",
         "Clue digit 2 found",
@@ -191,7 +196,7 @@ void writeGameSummaryReport(const char* filename,
     file << " OBJECTIVES" << endl;
     file << "-------------------------------------------" << endl;
     int completed = 0;
-    for (int i = 0; i < 14; i++){
+    for (int i = 0; i < OBJ_MISSION_WON; i++){
         if (objectives[i]){
             file << " [X] ";
             completed++;
@@ -203,7 +208,7 @@ void writeGameSummaryReport(const char* filename,
     file << "-------------------------------------------" << endl;
     file << " SESSION AUDIT" << endl;
     file << "-------------------------------------------" << endl;
-    file << "Objectives completed : " << completed << " / 14" << endl;
+    file << "Objectives completed : " << completed << " / " << OBJ_MISSION_WON << endl;   
     if (victory){
         file << "Result               : Mission completed." << endl;
     } else if (remainingEnergy <= 0){

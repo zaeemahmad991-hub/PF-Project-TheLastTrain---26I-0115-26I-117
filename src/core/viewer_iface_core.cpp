@@ -3,6 +3,21 @@
 #include "level.h"
 #include <iostream>
 using namespace std;
+
+const char* LINKS[NUM_FLOORS][ROOMS_PER_FLOOR - 1] = {
+    {"--W--", "[L1]-", "--D--"},
+    {"--D--", "[L1]-", "--D--"},
+    {"--L--", "--W--", "--D--"},
+    {"--W--", " ### ", "--D--"},
+    {"--D--", "--D--", "--W--"}
+};
+const char* VERTICAL[NUM_FLOORS] = {
+    "   S1 (R1)  L1 (R2/R3)",
+    "   S1 S2 (R1)  L1 (R2/R3)  L2 (R4)",
+    "   S2 (R1)",
+    "   S3 (R1)  L2 (R4)",
+    "   S3 (R1)  L2 (R4)"
+};
 const char* ROOM_NAMES[NUM_FLOORS][ROOMS_PER_FLOOR] = {
     {"Entrance Lobby", "Reception", "Waiting Area", "Utility Room"},
     {"Lounge", "Archive", "Lab", "Meeting Room"},
@@ -10,7 +25,7 @@ const char* ROOM_NAMES[NUM_FLOORS][ROOMS_PER_FLOOR] = {
     {"First Aid Station", "Medical Room", "Maintenance Corridor", "Office"},
     {"Security Room", "Train Boarding Platform", "Storage Room", "Observation Deck"}
 };
-const char* OBJECTIVE_LABELS[14] = {
+const char* OBJECTIVE_LABELS[OBJ_MISSION_WON] = {
     "Collect the Master Key (F1-R2)",
     "Find clue digit 4 (F3-R2)",
     "Find clue digit 2 (F4-R3)",
@@ -111,22 +126,24 @@ void renderAsciiBuilding(int playerFloor, int playerRoom) {
     for (int floor = NUM_FLOORS; floor >= 1; floor--) {
         for (int room = 1; room <= ROOMS_PER_FLOOR; room++) {
             printRoomCell(floor, room, playerFloor, playerRoom);
-            cout<< "--"<<horizontalConn(floor-1, room-1)<<"--";
+            if (room < ROOMS_PER_FLOOR) {
+                cout << LINKS[floor-1][room-1];
+            }
         }
+        cout << VERTICAL[floor-1] << endl;
         cout << endl;
     }
-    cout << "Legend: [>Fx-Rx<] = You, D = Door, W = Window, L = Locked, ### = Wall, S1-S3 = Stairs, L1/L2 = Lifts" << endl;
+    cout << "Legend: [>Fx-Rx<] = You, D = Door, W = Window, L = Locked, ### = Wall"<<endl;
+    cout << "        S1-S3 = Stairs, L1/L2 = Lifts" << endl;
 }
 void renderObjectivesChecklist(const bool objectives[NUM_OBJECTIVES]) {
     printHeader("OBJECTIVES");
-    for (int i = 0; i < 14; i++) {
-        printCheck(objectives[i], OBJECTIVE_LABELS[i]);
-    }
     int progress = 0;
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < OBJ_MISSION_WON; i++) {
+        printCheck(objectives[i], OBJECTIVE_LABELS[i]);
         if (objectives[i]) {
             progress++;
         }
     }
-    cout << "Progress: " << progress << " / 14" << endl;
+    cout << "Progress: " << progress << " / " << OBJ_MISSION_WON << endl;
 }
