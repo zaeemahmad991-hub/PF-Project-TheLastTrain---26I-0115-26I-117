@@ -131,7 +131,6 @@ void renderAsciiBuilding(int playerFloor, int playerRoom) {
             }
         }
         cout << VERTICAL[floor-1] << endl;
-        cout << endl;
     }
     cout << "Legend: [>Fx-Rx<] = You, D = Door, W = Window, L = Locked, ### = Wall"<<endl;
     cout << "        S1-S3 = Stairs, L1/L2 = Lifts" << endl;
